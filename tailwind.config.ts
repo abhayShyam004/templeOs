@@ -1,0 +1,105 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  darkMode: ["class"],
+  content: [
+    "./app/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "#ffffff",
+        foreground: "#1c1b1f",
+        surface: "#ffffff",
+        "surface-2": "#EEECE8",
+        "surface-3": "#E5E5E0",
+        accent: "#C8FF00",
+        "accent-pop": "#FF3B00",
+        muted: "#8E8E8E",
+        border: "var(--c-border)",
+        "border-strong": "var(--c-border-strong)",
+        
+        // Sacred Admin Colors
+        "outline": "#7d7373",
+        "tertiary-container": "#ffd709",
+        "primary": "#d14b43",
+        "on-error": "#ffffff",
+        "on-primary-container": "#4f0004",
+        "surface-dim": "#f5f5f5",
+        "surface-container-highest": "#e5e5e5",
+        "inverse-surface": "#120d0d",
+        "on-error-container": "#ffb2b9",
+        "error-container": "#a70138",
+        "secondary-fixed": "#ffc69f",
+        "on-secondary-fixed": "#552800",
+        "primary-fixed": "#ff766c",
+        "secondary": "#f68a2f",
+        "secondary-container": "#944a00",
+        "on-primary-fixed-variant": "#600006",
+        "primary-container": "#fcecea",
+        "primary-fixed-dim": "#f3655c",
+        "on-tertiary-fixed": "#453900",
+        "on-tertiary": "#655400",
+        "on-background": "#120d0d",
+        "on-tertiary-fixed-variant": "#665500",
+        "surface-container-lowest": "#ffffff",
+        "inverse-on-surface": "#fef1f0",
+        "surface-tint": "#d14b43",
+        "secondary-dim": "#ec8327",
+        "surface-container": "#fafafa",
+        "surface-variant": "#f0f0f0",
+        "on-primary-fixed": "#ffffff",
+        "tertiary-dim": "#efc900",
+        "primary-dim": "#ad322e",
+        "on-secondary-fixed-variant": "#7f3f00",
+        "error-dim": "#d73357",
+        "on-tertiary-container": "#5b4b00",
+        "error": "#b3261e",
+        "outline-variant": "#e0e0e0",
+        "on-surface-variant": "#444746",
+        "tertiary": "#857300",
+        "inverse-primary": "#ff8e84",
+        "on-surface": "#1c1b1f",
+        "on-secondary": "#ffffff",
+        "surface-container-high": "#ebebeb",
+        "on-primary": "#ffffff",
+        "tertiary-fixed": "#ffd709",
+        "surface-bright": "#ffffff",
+        "secondary-fixed-dim": "#ffb37c",
+        "on-secondary-container": "#ffffff",
+        "tertiary-fixed-dim": "#efc900",
+        "surface-container-low": "#f7f7f7",
+        
+        // Legacy support
+        "success": "#2D5A27",
+      },
+      fontFamily: {
+        sans: ["var(--font-sans)", "sans-serif"],
+        serif: ["var(--font-serif)", "serif"],
+        mono: ["var(--font-mono)", "monospace"],
+        headline: ["Plus Jakarta Sans", "sans-serif"],
+        body: ["Manrope", "sans-serif"],
+        label: ["Manrope", "sans-serif"],
+      },
+      keyframes: {
+        ticker: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
+        },
+        reveal: {
+          "0%": { transform: "translateY(110%)" },
+          "100%": { transform: "translateY(0%)" },
+        }
+      },
+      animation: {
+        ticker: "ticker 40s linear infinite",
+        reveal: "reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

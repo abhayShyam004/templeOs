@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(taskkill *)",
+      "Bash(rmdir *)",
+      "Bash(timeout *)",
+      "Bash(move *)"
+    ]
+  }
+}

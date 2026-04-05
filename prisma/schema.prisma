@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id             String        @id @default(cuid())
+  name           String?
+  email          String        @unique
+  password       String?
+  image          String?
+  role           String        @default("DEVOTEE") // ADMIN, DEVOTEE
+  bookings       Booking[]
+  orders         PrasadOrder[]
+  goodieOrders   GoodieOrder[]
+  testimonials   Testimonial[]
+  reminders      DarshanReminder[]
+  notificationPreference NotificationPreference?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Pooja {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  name           String
+  nameML         String
+  description    String
+  descriptionML  String
+  price          Int
+  duration       String
+  image          String // Main image
+  gallery        String        @default("") // Comma separated URLs for SQLite compatibility
+  sortOrder      Int?
+  available      Boolean        @default(true)
+  bookings       Booking[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Booking {
+  id               String         @id @default(cuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  poojaId          String
+  pooja            Pooja          @relation(fields: [poojaId], references: [id], onDelete: Restrict)
+  devoteeName      String
+  nakshatra        String
+  gotra            String?
+  scheduledDate    DateTime
+  status           String         @default("PENDING") // PENDING, CONFIRMED, COMPLETED, CANCELLED
+  paymentId        String?
+  paymentStatus    String         @default("UNPAID") // UNPAID, PAID, REFUNDED
+  certificateUrl   String?
+  prasadRequested  Boolean        @default(false)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([poojaId, scheduledDate])
+  @@index([status, scheduledDate])
+}
+
+model PrasadItem {
+  id            String            @id @default(cuid())
+  slug          String            @unique
+  name          String
+  nameML        String
+  description   String
+  price         Int
+  image         String // Main image
+  gallery       String            @default("") // Comma separated URLs
+  sortOrder     Int?
+  inStock       Boolean           @default(true)
+  orders        PrasadOrderItem[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model PrasadOrder {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         PrasadOrderItem[]
+  totalAmount   Int
+  address       String
+  pincode       String
+  phone         String
+  status        String            @default("PROCESSING") // PROCESSING, PACKED, SHIPPED, DELIVERED, CANCELLED
+  paymentId     String?
+  trackingId    String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model PrasadOrderItem {
+  id           String        @id @default(cuid())
+  orderId      String
+  order        PrasadOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId       String
+  item         PrasadItem    @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  quantity     Int
+
+  @@unique([orderId, itemId])
+}
+
+model GoodieItem {
+  id            String            @id @default(cuid())
+  slug          String            @unique
+  name          String
+  description   String
+  price         Int
+  image         String
+  gallery       String            @default("")
+  sortOrder     Int?
+  inStock       Boolean           @default(true)
+  orders        GoodieOrderItem[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model GoodieOrder {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         GoodieOrderItem[]
+  totalAmount   Int
+  address       String
+  pincode       String
+  phone         String
+  status        String            @default("PROCESSING") // PROCESSING, PACKED, SHIPPED, DELIVERED, CANCELLED
+  paymentId     String?
+  trackingId    String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model GoodieOrderItem {
+  id           String        @id @default(cuid())
+  orderId      String
+  order        GoodieOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemId       String
+  item         GoodieItem    @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  quantity     Int
+
+  @@unique([orderId, itemId])
+}
+
+model OfferingItem {
+  id            String    @id @default(cuid())
+  slug          String    @unique
+  name          String
+  description   String
+  category      String    @default("General")
+  price         Int
+  image         String
+  gallery       String    @default("")
+  sortOrder     Int?
+  inStock       Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model DarshanConfig {
+  id            String      @id @default(cuid())
+  youtubeUrl    String
+  isLive        Boolean     @default(false)
+  morningTime   String
+  eveningTime   String
+  updatedAt     DateTime    @updatedAt
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text        String
+  rating      Int      @default(5)
+  isApproved  Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isApproved, isFeatured])
+}
+
+model DarshanReminder {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email         String
+  scheduledFor  DateTime
+  sentAt        DateTime?
+  createdAt     DateTime    @default(now())
+
+  @@index([scheduledFor, sentAt])
+}
+
+model SiteSetting {
+  id            String      @id @default(cuid())
+  key           String      @unique
+  value         String
+  type          String      @default("text") // text, image, number, boolean, json
+  description   String?
+  updatedAt     DateTime    @updatedAt
+}
+
+model NotificationPreference {
+  id            String      @id @default(cuid())
+  userId        String      @unique
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  allowEmails   Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model MarqueeItem {
+  id          String   @id @default(cuid())
+  text        String
+  link        String?  @default("#")
+  sortOrder   Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
