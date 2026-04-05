@@ -1,6 +1,8 @@
 import PublicMarketplace, { MarketplaceItem } from "@/components/temple/public-marketplace";
 import { getOfferingDelegate } from "@/lib/offering-delegate";
 
+export const dynamic = "force-dynamic";
+
 type OfferingRow = {
   id: string;
   name: string;

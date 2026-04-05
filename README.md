@@ -39,6 +39,36 @@ npm start
 - The UI is production-buildable.
 - Authentication, payments, database persistence, and certificate generation are wired for real credentials and service configuration.
 
+## Render Deploy
+
+This repo includes a `render.yaml` Blueprint for a Render `Web Service` plus a managed `Render Postgres` database.
+
+1. Push this repo to GitHub.
+2. In Render, choose `New +` -> `Blueprint`.
+3. Select this repository.
+4. Render will create:
+   - a web service for the Next.js app
+   - a managed Postgres database
+5. Fill the prompted secrets before the first deploy:
+   - `RAZORPAY_KEY_ID`
+   - `RAZORPAY_KEY_SECRET`
+   - `NEXT_PUBLIC_RAZORPAY_KEY_ID`
+   - `SMTP_HOST`
+   - `SMTP_PORT`
+   - `SMTP_SECURE`
+   - `SMTP_USER`
+   - `SMTP_PASS`
+   - `SMTP_FROM`
+6. After deploy, set both `APP_URL` and `NEXT_PUBLIC_APP_URL` to your final Render URL or custom domain.
+7. For the first admin account, temporarily add these env vars in Render:
+   - `ADMIN_BOOTSTRAP_EMAIL`
+   - `ADMIN_BOOTSTRAP_PASSWORD`
+   - `ADMIN_BOOTSTRAP_TOKEN`
+8. Open `/api/dev/create-admin?token=YOUR_ADMIN_BOOTSTRAP_TOKEN` once, log in with that account, then remove the bootstrap env vars.
+
+The deploy uses `prisma db push` because the repo does not currently include Prisma migrations.
+Free Render note: free web services cannot send SMTP traffic on ports `25`, `465`, or `587`, and free Postgres expires after 30 days.
+
 ## Payment Setup
 
 1. Create a Razorpay account and get your `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET`.

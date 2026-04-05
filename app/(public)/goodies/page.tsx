@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
 import PublicMarketplace, { MarketplaceItem } from "@/components/temple/public-marketplace";
 
+export const dynamic = "force-dynamic";
+
 export default async function GoodiesPage() {
   const itemsData = await db.goodieItem.findMany({
     where: { inStock: true },

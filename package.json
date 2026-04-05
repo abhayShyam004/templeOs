@@ -2,9 +2,13 @@
   "name": "sree-muthappan-temple-indira-nagar",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "set NODE_OPTIONS=--max-old-space-size=4096 && next build",
+    "build": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
+    "db:push": "prisma db push",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
