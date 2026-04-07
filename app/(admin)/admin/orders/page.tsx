@@ -18,10 +18,10 @@ export default async function AdminOrdersPage() {
     <div className="flex flex-col gap-12">
       {/* Hero Title Section */}
       <section>
-        <h1 className="text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-on-surface md:text-5xl">
           Order Processing
         </h1>
-        <p className="text-on-surface-variant font-medium text-lg max-w-2xl">
+        <p className="max-w-2xl text-base font-medium text-on-surface-variant md:text-lg">
           Track and fulfill prasadam and devotee goodies orders. 
           Real-time fulfillment queue from the public store.
         </p>
@@ -59,7 +59,7 @@ function OrderTable({
 }) {
   return (
     <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
-      <div className="p-6 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+      <div className="flex flex-col gap-3 border-b border-outline-variant bg-surface-container-low p-4 md:flex-row md:items-center md:justify-between md:p-6">
         <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">{icon}</span>
           {title}
@@ -69,7 +69,7 @@ function OrderTable({
         </span>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
             <tr className="bg-surface-container-low/50">
@@ -116,6 +116,52 @@ function OrderTable({
           </div>
         )}
       </div>
+
+      <div className="divide-y divide-outline-variant md:hidden">
+        {rows.length === 0 ? (
+          <div className="p-8 text-center text-on-surface-variant">
+            <span className="material-symbols-outlined text-4xl mb-2 opacity-20">shopping_cart_off</span>
+            <p>No orders found in this category.</p>
+          </div>
+        ) : (
+          rows.map((row) => (
+            <article key={row.id} className="space-y-4 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-on-surface-variant">
+                    {row.id.slice(-8).toUpperCase()}
+                  </p>
+                  <p className="mt-2 truncate text-base font-bold text-on-surface">{row.user.name || "Devotee"}</p>
+                  <p className="mt-1 break-all text-xs font-mono text-on-surface-variant">{row.user.email}</p>
+                </div>
+                <span className={`shrink-0 rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${statusClass(row.status)}`}>
+                  {row.status}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 rounded-2xl border border-outline-variant bg-surface-container-low p-3">
+                <MobileInfo label="Amount" value={`₹${row.totalAmount}`} />
+                <MobileInfo
+                  label="Date"
+                  value={new Date(row.createdAt).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                  })}
+                />
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MobileInfo({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-on-surface-variant">{label}</p>
+      <p className="mt-1 text-sm font-bold text-on-surface">{value}</p>
     </div>
   );
 }

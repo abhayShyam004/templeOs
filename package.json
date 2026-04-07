@@ -9,6 +9,7 @@
     "dev": "next dev",
     "build": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next build",
     "db:push": "prisma db push",
+    "db:migrate:neon": "bash scripts/migrate-to-neon.sh",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
@@ -31,6 +32,7 @@
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",
     "color-bits": "^1.1.1",
     "framer-motion": "^12.38.0",
@@ -39,6 +41,7 @@
     "motion": "^12.38.0",
     "next": "^14.2.30",
     "next-auth": "^5.0.0-beta.25",
+    "next-cloudinary": "^6.17.5",
     "next-intl": "^4.1.0",
     "nodemailer": "^7.0.13",
     "postcss": "^8.5.3",

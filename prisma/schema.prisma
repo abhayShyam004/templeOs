@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -18,6 +19,7 @@ model User {
   orders         PrasadOrder[]
   goodieOrders   GoodieOrder[]
   testimonials   Testimonial[]
+  reviews        Review[]
   reminders      DarshanReminder[]
   notificationPreference NotificationPreference?
   createdAt      DateTime      @default(now())
@@ -71,6 +73,7 @@ model PrasadItem {
   name          String
   nameML        String
   description   String
+  grams         Int?
   price         Int
   image         String // Main image
   gallery       String            @default("") // Comma separated URLs
@@ -204,6 +207,29 @@ model DarshanReminder {
   createdAt     DateTime    @default(now())
 
   @@index([scheduledFor, sentAt])
+}
+
+enum ReviewTargetType {
+  POOJA
+  PRASADAM
+  GOODIE
+  OFFERING
+}
+
+model Review {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType  ReviewTargetType
+  targetId    String
+  rating      Int
+  title       String?
+  comment     String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId, createdAt])
 }
 
 model SiteSetting {

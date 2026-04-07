@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { CloudinaryUploadButton } from "@/components/admin/cloudinary-upload-button";
 
 type FieldType = "text" | "number" | "textarea" | "checkbox";
 
@@ -18,7 +19,15 @@ type CatalogManagerProps = {
   fields: FieldConfig[];
   booleanBadgeField?: string;
   booleanBadgeLabel?: [string, string];
+  uploadPreset?: string;
 };
+
+function parseGalleryInput(value: string) {
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 export function CatalogManager({
   title,
@@ -27,6 +36,7 @@ export function CatalogManager({
   fields,
   booleanBadgeField,
   booleanBadgeLabel = ["Active", "Inactive"],
+  uploadPreset,
 }: CatalogManagerProps) {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,12 +125,12 @@ export function CatalogManager({
   return (
     <div className="flex flex-col">
       {/* Hero Title Section */}
-      <section className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <section className="mb-8 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between md:gap-6">
         <div>
-          <h1 className="text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-on-surface md:text-5xl">
             {title}
           </h1>
-          <p className="text-on-surface-variant font-medium text-lg">
+          <p className="text-base font-medium text-on-surface-variant md:text-lg">
             {subtitle}
           </p>
         </div>
@@ -132,7 +142,7 @@ export function CatalogManager({
               setFormData(initialData);
               setShowForm(true);
             }}
-            className="bg-primary text-white font-bold px-8 py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/20"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary/20 transition-all hover:opacity-90 md:w-auto md:px-8 md:py-4"
           >
             <span className="material-symbols-outlined">add_circle</span>
             Add New Item
@@ -142,8 +152,8 @@ export function CatalogManager({
 
       {showForm ? (
         <div className="lg:col-span-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="bg-surface p-8 rounded-xl border border-outline-variant shadow-sm">
-            <div className="flex items-center justify-between mb-8">
+          <div className="rounded-xl border border-outline-variant bg-surface p-4 shadow-sm md:p-8">
+            <div className="mb-6 flex flex-col gap-4 md:mb-8 md:flex-row md:items-center md:justify-between">
               <h3 className="text-xl font-bold flex items-center gap-2 text-on-surface">
                 <span className="material-symbols-outlined text-primary" style={{ fontVariationSettings: '"FILL" 1' }}>
                   {editingId ? "edit_square" : "add_circle"}
@@ -167,13 +177,102 @@ export function CatalogManager({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {fields.map((field) => {
                   if (field.type === "checkbox") return null;
+                  const isImageField = field.name === "image";
+                  const isGalleryField = field.name === "gallery";
+
                   return (
                     <div key={field.name} className={`space-y-2 ${field.type === "textarea" ? "md:col-span-2" : ""}`}>
                       <label className="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest ml-1">
                         {field.label}
                       </label>
-                      {field.type === "textarea" ? (
+                      {isImageField ? (
+                        <div className="space-y-3">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <CloudinaryUploadButton
+                              buttonLabel="Upload Image"
+                              className="rounded-lg border border-outline-variant bg-surface-container px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface transition-colors hover:bg-surface-container-high"
+                              onUploaded={(url) => setFormData((prev) => ({ ...prev, [field.name]: url }))}
+                              uploadPreset={uploadPreset}
+                            />
+                            {formData[field.name] && (
+                              <button
+                                type="button"
+                                onClick={() => setFormData((prev) => ({ ...prev, [field.name]: "" }))}
+                                className="rounded-lg border border-outline-variant px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant transition-colors hover:text-error"
+                              >
+                                Clear Image
+                              </button>
+                            )}
+                          </div>
+                          <input
+                            type="text"
+                            required={field.required}
+                            value={formData[field.name] ?? ""}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
+                            className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface outline-none"
+                            placeholder={`Enter ${field.label.toLowerCase()}...`}
+                          />
+                          {formData[field.name] && (
+                            <img
+                              src={formData[field.name]}
+                              alt="Selected upload preview"
+                              className="h-36 w-full rounded-lg border border-outline-variant object-cover md:w-56"
+                            />
+                          )}
+                        </div>
+                      ) : isGalleryField ? (
+                        <div className="space-y-3 md:col-span-2">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <CloudinaryUploadButton
+                              buttonLabel="Add Gallery Images"
+                              className="rounded-lg border border-outline-variant bg-surface-container px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface transition-colors hover:bg-surface-container-high"
+                              maxFiles={10}
+                              multiple
+                              onUploaded={(url) =>
+                                setFormData((prev) => {
+                                  const currentGallery = parseGalleryInput(String(prev[field.name] ?? ""));
+                                  return {
+                                    ...prev,
+                                    [field.name]: [...currentGallery, url].join(", "),
+                                  };
+                                })
+                              }
+                              uploadPreset={uploadPreset}
+                            />
+                            {formData[field.name] && (
+                              <button
+                                type="button"
+                                onClick={() => setFormData((prev) => ({ ...prev, [field.name]: "" }))}
+                                className="rounded-lg border border-outline-variant px-4 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant transition-colors hover:text-error"
+                              >
+                                Clear Gallery
+                              </button>
+                            )}
+                          </div>
+                          <textarea
+                            required={field.required}
+                            value={formData[field.name] ?? ""}
+                            onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
+                            className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface resize-none outline-none"
+                            placeholder={`Enter ${field.label.toLowerCase()}...`}
+                            rows={3}
+                          />
+                          {parseGalleryInput(String(formData[field.name] ?? "")).length > 0 && (
+                            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                              {parseGalleryInput(String(formData[field.name] ?? "")).map((imageUrl) => (
+                                <img
+                                  key={imageUrl}
+                                  src={imageUrl}
+                                  alt="Gallery preview"
+                                  className="h-24 w-full rounded-lg border border-outline-variant object-cover"
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : field.type === "textarea" ? (
                         <textarea
+                          required={field.required}
                           value={formData[field.name] ?? ""}
                           onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
                           className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface resize-none outline-none"
@@ -187,6 +286,7 @@ export function CatalogManager({
                           )}
                           <input
                             type={field.type}
+                            required={field.required}
                             value={formData[field.name] ?? ""}
                             onChange={(e) => setFormData((prev) => ({ ...prev, [field.name]: e.target.value }))}
                             className={`w-full bg-surface-container-low border border-outline-variant rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary/20 text-on-surface outline-none ${field.name === "price" ? "pl-8 font-mono" : ""}`}
@@ -223,7 +323,7 @@ export function CatalogManager({
                 </div>
               ))}
 
-              <div className="pt-6 flex gap-4">
+              <div className="flex flex-col gap-3 pt-6 md:flex-row md:gap-4">
                 <button
                   type="submit"
                   className="flex-1 bg-primary text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-primary/20"
@@ -236,7 +336,7 @@ export function CatalogManager({
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-8 bg-surface border border-outline-variant font-bold rounded-xl hover:bg-surface-container-low transition-colors"
+                  className="rounded-xl border border-outline-variant bg-surface px-6 py-3 font-bold transition-colors hover:bg-surface-container-low md:px-8"
                 >
                   Cancel
                 </button>
@@ -247,7 +347,7 @@ export function CatalogManager({
       ) : (
         <div className="lg:col-span-12 animate-in fade-in duration-500">
           <div className="bg-surface rounded-xl border border-outline-variant overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+            <div className="flex flex-col gap-3 border-b border-outline-variant bg-surface-container-low p-4 md:flex-row md:items-center md:justify-between md:p-6">
               <h3 className="text-lg font-bold text-on-surface flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">list_alt</span>
                 Existing Items
@@ -269,14 +369,14 @@ export function CatalogManager({
                 </div>
               ) : (
                 items.map((item) => (
-                  <div key={item.id} className="p-6 flex flex-wrap items-center justify-between gap-4 hover:bg-surface-container-low/50 transition-colors">
-                    <div className="flex items-center gap-4">
+                  <div key={item.id} className="flex flex-col gap-4 p-4 transition-colors hover:bg-surface-container-low/50 md:flex-row md:items-center md:justify-between md:p-6">
+                    <div className="flex min-w-0 items-center gap-4">
                       {item.image && (
                         <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover border border-outline-variant" />
                       )}
-                      <div>
-                        <h4 className="font-bold text-on-surface">{item.name}</h4>
-                        <div className="flex items-center gap-3 mt-1">
+                      <div className="min-w-0">
+                        <h4 className="truncate font-bold text-on-surface">{item.name}</h4>
+                        <div className="mt-1 flex flex-wrap items-center gap-2 md:gap-3">
                           {item.price != null && (
                             <span className="text-xs font-mono text-on-surface-variant bg-surface-container rounded px-2 py-0.5 border border-outline-variant">
                               ₹{item.price}
@@ -291,7 +391,7 @@ export function CatalogManager({
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 self-end md:self-auto">
                       <button
                         onClick={() => startEdit(item)}
                         className="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-lg transition-all"

@@ -144,6 +144,11 @@ export default function CartPage() {
                       <span className="text-xs text-stone-500">Contribution per item {formatCurrency(item.price)}</span>
                     </div>
                     <h2 className="mt-3 text-xl font-black leading-tight font-headline">{item.name}</h2>
+                    {item.type === "prasadam" && typeof item.grams === "number" ? (
+                      <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
+                        {item.grams}g per pack
+                      </p>
+                    ) : null}
                     <div className="mt-5 flex flex-wrap items-center gap-3">
                       <div className="inline-flex items-center rounded-full border border-stone-200 bg-stone-50 px-2 py-2">
                         <button

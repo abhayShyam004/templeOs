@@ -16,6 +16,9 @@ export type MarketplaceItem = {
   image: string;
   duration?: string;
   category?: string;
+  grams?: number;
+  averageRating?: number | null;
+  reviewCount?: number;
 };
 
 type Props = {
@@ -27,21 +30,11 @@ type Props = {
   filterTitle?: string;
   categories?: string[];
   itemActionLabel?: string;
-  itemActionHrefPrefix: string;
+  detailHrefPrefix: string;
   itemActionMode?: "detail" | "add-to-cart";
   allowCart?: boolean;
   showItemAction?: boolean;
 };
-
-function seededStats(id: string) {
-  const seed = Array.from(id).reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const rating = 4 + (seed % 10) / 20;
-  const reviews = 80 + (seed % 920);
-  return {
-    rating: Math.min(4.9, Number(rating.toFixed(1))),
-    reviews,
-  };
-}
 
 export default function PublicMarketplace({
   items,
@@ -52,7 +45,7 @@ export default function PublicMarketplace({
   filterTitle = "Filters",
   categories = [],
   itemActionLabel = "View Details",
-  itemActionHrefPrefix,
+  detailHrefPrefix,
   itemActionMode = "detail",
   allowCart = true,
   showItemAction = true,
@@ -63,6 +56,7 @@ export default function PublicMarketplace({
   const [query, setQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<string | null>(null);
+  const [minRating, setMinRating] = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const sessionUserId = (session?.user as { id?: string; email?: string } | undefined)?.id ?? session?.user?.email ?? null;
@@ -102,10 +96,16 @@ export default function PublicMarketplace({
         priceRange === "₹5,000 - ₹10,000" ? (item.price >= 5000 && item.price <= 10000) :
         priceRange === "Above ₹10,000" ? item.price > 10000 : true
       );
+
+      const matchesRating =
+        minRating == null ||
+        (typeof item.averageRating === "number" &&
+          Number.isFinite(item.averageRating) &&
+          item.averageRating >= minRating);
       
-      return matchesSearch && matchesCategory && matchesPrice;
+      return matchesSearch && matchesCategory && matchesPrice && matchesRating;
     });
-  }, [items, query, selectedCategories, priceRange]);
+  }, [items, minRating, priceRange, query, selectedCategories]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev => 
@@ -139,6 +139,7 @@ export default function PublicMarketplace({
         image: item.image,
         quantity: 1,
         type: activeCategory === "prasadam" ? "prasadam" : "goodie",
+        grams: item.grams,
       });
     }
 
@@ -277,19 +278,24 @@ export default function PublicMarketplace({
                   </div>
                 </div>
                 
-                {/* Devotee Ratings */}
+                {/* Ratings */}
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4 block">Devotee Ratings</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4 block">Ratings</span>
                   <div className="space-y-2">
                     {[4, 3].map((rating) => (
-                      <div key={rating} className="flex items-center gap-1 cursor-pointer group">
+                      <button
+                        key={rating}
+                        type="button"
+                        onClick={() => setMinRating((current) => (current === rating ? null : rating))}
+                        className={`flex items-center gap-1 transition ${minRating === rating ? "text-primary" : "text-on-surface-variant hover:text-primary"}`}
+                      >
                         <div className="flex text-amber-500">
                           {[...Array(5)].map((_, i) => (
                             <span key={i} className="material-symbols-outlined text-sm" style={{ fontVariationSettings: `'FILL' ${i < rating ? 1 : 0}` }}>star</span>
                           ))}
                         </div>
-                        <span className="text-xs text-on-surface-variant group-hover:text-primary transition-colors">& Up</span>
-                      </div>
+                        <span className="text-xs">& Up</span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -306,40 +312,56 @@ export default function PublicMarketplace({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
               {filtered.map((item) => {
-                const stats = seededStats(item.id);
+                const detailHref = `${detailHrefPrefix}/${item.id}`;
+                const hasRatings = typeof item.averageRating === "number" && (item.reviewCount ?? 0) > 0;
                 return (
-                  <div key={item.id} className="bg-surface rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 border border-outline-variant shadow-sm group flex flex-col h-full">
+                  <div key={item.id} className="relative bg-surface rounded-xl md:rounded-2xl overflow-hidden hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 border border-outline-variant shadow-sm group flex flex-col h-full">
+                    <Link href={detailHref} aria-label={`View details for ${item.name}`} className="absolute inset-0 z-10" />
                     <div className="h-40 md:h-48 relative overflow-hidden shrink-0">
                       <img 
                         alt={item.name} 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                         src={item.image}
                       />
-                      {stats.rating > 4.7 && (
+                      {hasRatings && (item.averageRating ?? 0) >= 4.7 && (
                         <span className="absolute top-3 right-3 bg-secondary text-on-secondary px-2 py-1 rounded text-[10px] font-bold uppercase tracking-tighter">Bestseller</span>
                       )}
                     </div>
-                    <div className="p-4 md:p-5 flex flex-col flex-1">
+                    <div className="relative z-20 p-4 md:p-5 flex flex-col flex-1">
                       <h3 className="font-bold text-base md:text-lg mb-1 font-headline truncate">{item.name}</h3>
-                      <div className="flex items-center gap-1 mb-3">
-                        <div className="flex text-amber-500">
-                          {[...Array(5)].map((_, i) => (
-                            <span key={i} className="material-symbols-outlined text-[10px] md:text-xs" style={{ fontVariationSettings: `'FILL' ${i < Math.floor(stats.rating) ? 1 : 0}` }}>star</span>
-                          ))}
+                      {hasRatings ? (
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="flex text-amber-500">
+                            {[...Array(5)].map((_, i) => (
+                              <span key={i} className="material-symbols-outlined text-[10px] md:text-xs" style={{ fontVariationSettings: `'FILL' ${i < Math.round(item.averageRating || 0) ? 1 : 0}` }}>star</span>
+                            ))}
+                          </div>
+                          <span className="text-[10px] text-on-surface-variant">
+                            {(item.averageRating || 0).toFixed(1)} · {item.reviewCount} ratings
+                          </span>
                         </div>
-                        <span className="text-[10px] text-on-surface-variant">({stats.reviews} Devotees)</span>
-                      </div>
+                      ) : (
+                        <div className="mb-3 text-[10px] uppercase tracking-widest text-on-surface-variant">
+                          No ratings yet
+                        </div>
+                      )}
                       
                       <p className="text-xs text-on-surface-variant line-clamp-2 mb-4 flex-1">{item.description}</p>
+                      {typeof item.grams === "number" ? (
+                        <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-on-surface-variant">
+                          {item.grams}g
+                        </p>
+                      ) : null}
 
                       <div className="flex items-end justify-between">
-                        <div>
-                          <span className="text-[10px] text-on-surface-variant line-through block leading-none">₹{Math.ceil(item.price * 1.2)}</span>
-                          <span className="text-xl md:text-2xl font-black text-on-surface leading-none font-headline">₹{item.price}</span>
-                        </div>
+                        <div className="text-xl md:text-2xl font-black text-on-surface leading-none font-headline">₹{item.price}</div>
                         {allowCart && (
                           <button 
-                            onClick={() => addItemToCart(item)}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              addItemToCart(item);
+                            }}
                             className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-on-primary p-2 md:p-2.5 rounded-lg md:rounded-xl transition-all border border-outline-variant"
                           >
                             <span className="material-symbols-outlined text-xl md:text-2xl">add_shopping_cart</span>
@@ -350,16 +372,18 @@ export default function PublicMarketplace({
                         itemActionMode === "add-to-cart" ? (
                           <button
                             type="button"
-                            onClick={() => {
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
                               addItemToCart(item);
-                              router.push(itemActionHrefPrefix);
+                              router.push("/cart");
                             }}
                             className="block w-full mt-4 py-2.5 md:py-3 bg-primary/5 border border-primary/20 text-primary text-center font-bold rounded-lg md:rounded-xl hover:bg-primary hover:text-on-primary transition-all text-sm md:text-base"
                           >
                             {itemActionLabel}
                           </button>
                         ) : (
-                          <Link href={`${itemActionHrefPrefix}/${item.id}`} className="block w-full mt-4 py-2.5 md:py-3 bg-primary/5 border border-primary/20 text-primary text-center font-bold rounded-lg md:rounded-xl hover:bg-primary hover:text-on-primary transition-all text-sm md:text-base">
+                          <Link href={detailHref} className="block w-full mt-4 py-2.5 md:py-3 bg-primary/5 border border-primary/20 text-primary text-center font-bold rounded-lg md:rounded-xl hover:bg-primary hover:text-on-primary transition-all text-sm md:text-base">
                             {itemActionLabel}
                           </Link>
                         )

@@ -22,22 +22,22 @@ export default async function AdminDashboardPage() {
   return (
     <div className="flex flex-col">
       {/* Hero Title Section */}
-      <section className="mb-12">
-        <h1 className="text-5xl font-extrabold tracking-tight text-on-surface mb-2">
+      <section className="mb-8 md:mb-12">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-on-surface md:text-5xl">
           Temple Operations Dashboard
         </h1>
-        <p className="text-on-surface-variant font-medium text-lg max-w-3xl">
+        <p className="max-w-3xl text-base font-medium text-on-surface-variant md:text-lg">
           Central command for content, catalogs, orders, and devotee workflows. 
           Use this panel to keep the public website synchronized with real temple operations.
         </p>
       </section>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className={`stat-card p-8 rounded-xl border transition-all duration-300 shadow-sm hover:shadow-md ${
+            className={`stat-card rounded-xl border p-5 transition-all duration-300 shadow-sm hover:shadow-md md:p-8 ${
               stat.featured 
                 ? "bg-primary-container border-primary/20" 
                 : "bg-surface border-outline-variant hover:border-primary/30"
@@ -52,7 +52,7 @@ export default async function AdminDashboardPage() {
               </span>
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-extrabold tracking-tight text-on-surface">
+              <span className="text-4xl font-extrabold tracking-tight text-on-surface md:text-5xl">
                 {stat.value}
               </span>
             </div>
@@ -66,12 +66,12 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Quick Actions or Recent Activity could go here */}
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold text-on-surface mb-6 flex items-center gap-2">
+      <section className="mt-10 md:mt-12">
+        <h2 className="mb-5 flex items-center gap-2 text-xl font-bold text-on-surface md:mb-6 md:text-2xl">
           <span className="material-symbols-outlined text-primary">bolt</span>
           Quick Navigation
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4 md:gap-4">
           {[
             { label: "Manage Poojas", href: "/admin/pooja-management", icon: "edit_calendar" },
             { label: "View Bookings", href: "/admin/bookings", icon: "list_alt" },

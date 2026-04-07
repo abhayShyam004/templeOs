@@ -1,5 +1,7 @@
 import { db } from "@/lib/db";
 import PublicMarketplace, { MarketplaceItem } from "@/components/temple/public-marketplace";
+import { getReviewSummaries } from "@/lib/reviews";
+import { ReviewTargetType } from "@/lib/review-target-type";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +10,10 @@ export default async function PrasadamPage() {
     where: { inStock: true },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });
+  const reviewSummaries = await getReviewSummaries(
+    ReviewTargetType.PRASADAM,
+    itemsData.map((item) => item.id),
+  );
 
   const items: MarketplaceItem[] = itemsData.map(p => ({
     id: p.id,
@@ -15,7 +21,10 @@ export default async function PrasadamPage() {
     description: p.description,
     price: p.price,
     image: p.image,
-    category: "Prasadam"
+    grams: p.grams ?? undefined,
+    category: "Prasadam",
+    averageRating: reviewSummaries.get(p.id)?.averageRating ?? null,
+    reviewCount: reviewSummaries.get(p.id)?.reviewCount ?? 0,
   }));
 
   return (
@@ -26,9 +35,9 @@ export default async function PrasadamPage() {
       searchPlaceholder="Search for Prasadam..."
       activeCategory="prasadam"
       filterTitle="Prasadam Filters"
-      itemActionLabel="Order Now"
-      itemActionHrefPrefix="/cart"
-      itemActionMode="add-to-cart"
+      itemActionLabel="View Details"
+      detailHrefPrefix="/prasadam"
+      itemActionMode="detail"
     />
   );
 }

@@ -6,6 +6,7 @@ export default function AdminPoojaManagementPage() {
       title="Pooja Catalog"
       subtitle="create and manage poojas"
       endpoint="/api/admin/poojas"
+      uploadPreset={process.env.CLOUDINARY_UPLOAD_PRESET || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       booleanBadgeField="available"
       booleanBadgeLabel={["Visible", "Hidden"]}
       fields={[

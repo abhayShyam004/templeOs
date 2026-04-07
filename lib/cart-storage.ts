@@ -5,6 +5,7 @@ export type CartItem = {
   image: string;
   quantity: number;
   type: "prasadam" | "goodie";
+  grams?: number;
 };
 
 const CART_UPDATED_EVENT = "cart-updated";
@@ -32,6 +33,7 @@ export function readStoredCart(storageKey: string): CartItem[] {
         typeof item.price !== "number" ||
         typeof item.image !== "string" ||
         typeof item.quantity !== "number" ||
+        (typeof item.grams !== "undefined" && typeof item.grams !== "number") ||
         (item.type !== "prasadam" && item.type !== "goodie")
       ) {
         return [];
@@ -45,6 +47,7 @@ export function readStoredCart(storageKey: string): CartItem[] {
           image: item.image,
           quantity: Math.max(1, Math.trunc(item.quantity)),
           type: item.type,
+          grams: typeof item.grams === "number" ? Math.max(1, Math.trunc(item.grams)) : undefined,
         } satisfies CartItem,
       ];
     });

@@ -6,6 +6,7 @@ export default function AdminOfferingsManagementPage() {
       title="Offerings Catalog"
       subtitle="Create and manage offering items shown on the public offerings page."
       endpoint="/api/admin/offerings"
+      uploadPreset={process.env.CLOUDINARY_UPLOAD_PRESET || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       booleanBadgeField="inStock"
       booleanBadgeLabel={["In Stock", "Out of Stock"]}
       fields={[

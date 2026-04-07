@@ -1,5 +1,7 @@
 import PublicMarketplace, { MarketplaceItem } from "@/components/temple/public-marketplace";
 import { getOfferingDelegate } from "@/lib/offering-delegate";
+import { getReviewSummaries } from "@/lib/reviews";
+import { ReviewTargetType } from "@/lib/review-target-type";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +20,10 @@ export default async function OfferingsPage() {
     where: { inStock: true },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   })) as OfferingRow[];
+  const reviewSummaries = await getReviewSummaries(
+    ReviewTargetType.OFFERING,
+    offeringsData.map((item) => item.id),
+  );
 
   const offeringItems: MarketplaceItem[] = offeringsData.map((item) => ({
     id: item.id,
@@ -26,6 +32,8 @@ export default async function OfferingsPage() {
     price: item.price,
     image: item.image,
     category: item.category,
+    averageRating: reviewSummaries.get(item.id)?.averageRating ?? null,
+    reviewCount: reviewSummaries.get(item.id)?.reviewCount ?? 0,
   }));
 
   const categories = [...new Set(offeringsData.map((item) => item.category).filter(Boolean))];
@@ -39,11 +47,10 @@ export default async function OfferingsPage() {
       activeCategory="offerings"
       filterTitle="Offering Filters"
       categories={categories}
-      itemActionLabel="Offer Now"
-      itemActionHrefPrefix="/cart"
-      itemActionMode="add-to-cart"
+      itemActionLabel="View Details"
+      detailHrefPrefix="/offerings"
+      itemActionMode="detail"
       allowCart={false}
-      showItemAction={false}
     />
   );
 }

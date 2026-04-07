@@ -5,7 +5,7 @@ Temple services web application built with Next.js 14, TypeScript, Tailwind CSS,
 ## Run locally
 
 1. Copy `.env.example` to `.env.local`.
-2. Fill in your database, auth, payment, Cloudinary, and SMTP values.
+2. Fill in your Neon, auth, payment, and SMTP values.
 3. Install dependencies:
 
 ```bash
@@ -19,6 +19,47 @@ npm run dev
 ```
 
 5. Open [http://localhost:3000](http://localhost:3000)
+
+## Neon Quickstart
+
+This app already uses Prisma with PostgreSQL, so Neon setup is just environment configuration.
+
+1. Create a Neon project and open the `Connect` panel.
+2. Copy the pooled connection string into `DATABASE_URL`.
+3. Copy the direct connection string into `DIRECT_URL`.
+4. Keep `AUTH_SECRET`, Razorpay, and SMTP values in `.env.local`.
+5. Push the schema to Neon:
+
+```bash
+npx prisma db push
+```
+
+6. Start the app:
+
+```bash
+npm run dev
+```
+
+Neon detail: use the `-pooler` hostname for `DATABASE_URL` so the app uses connection pooling, and use the non-pooled hostname for `DIRECT_URL` so Prisma CLI commands talk to Neon directly.
+
+## Move Existing Data To Neon
+
+If your current data is still in another Postgres database, migrate it with:
+
+```bash
+SOURCE_DATABASE_URL="postgresql://CURRENT_DB_URL" \
+NEON_DIRECT_URL="postgresql://NEON_DIRECT_URL" \
+npm run db:migrate:neon
+```
+
+If the Neon database already contains tables you want to replace, add `NEON_RESET_TARGET=1` before the command to drop and recreate the target `public` schema first.
+
+After the restore finishes, point the app at Neon:
+
+```bash
+DATABASE_URL="postgresql://NEON_POOLED_URL"
+DIRECT_URL="postgresql://NEON_DIRECT_URL"
+```
 
 ## Build
 
@@ -68,6 +109,8 @@ This repo includes a `render.yaml` Blueprint for a Render `Web Service` plus a m
 
 The deploy uses `prisma db push` because the repo does not currently include Prisma migrations.
 Free Render note: free web services cannot send SMTP traffic on ports `25`, `465`, or `587`, and free Postgres expires after 30 days.
+
+If you deploy this app with Neon instead of Render Postgres, set both `DATABASE_URL` and `DIRECT_URL` in your hosting provider and skip the managed Render database portion of the blueprint.
 
 ## Payment Setup
 

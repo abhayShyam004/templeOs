@@ -21,6 +21,11 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
+    const grams = Number(body.grams);
+
+    if (!Number.isFinite(grams) || grams <= 0) {
+      return new NextResponse("Prasadam weight in grams is required", { status: 400 });
+    }
 
     const item = await db.prasadItem.create({
       data: {
@@ -28,6 +33,7 @@ export async function POST(request: Request) {
         name: body.name,
         nameML: body.nameML || body.name,
         description: body.description,
+        grams,
         price: Number(body.price ?? 0),
         image: body.image,
         gallery: encodeGallery(body.gallery),

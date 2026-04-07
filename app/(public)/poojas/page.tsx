@@ -1,5 +1,7 @@
 import { db } from "@/lib/db";
 import PublicMarketplace, { MarketplaceItem } from "@/components/temple/public-marketplace";
+import { getReviewSummaries } from "@/lib/reviews";
+import { ReviewTargetType } from "@/lib/review-target-type";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +10,10 @@ export default async function PoojasPage() {
     where: { available: true },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
   });
+  const reviewSummaries = await getReviewSummaries(
+    ReviewTargetType.POOJA,
+    poojasData.map((pooja) => pooja.id),
+  );
 
   const poojas: MarketplaceItem[] = poojasData.map(p => ({
     id: p.id,
@@ -16,7 +22,8 @@ export default async function PoojasPage() {
     price: p.price,
     image: p.image,
     duration: p.duration,
-    category: "Rituals" // Example category
+    averageRating: reviewSummaries.get(p.id)?.averageRating ?? null,
+    reviewCount: reviewSummaries.get(p.id)?.reviewCount ?? 0,
   }));
 
   return (
@@ -27,9 +34,9 @@ export default async function PoojasPage() {
       searchPlaceholder="Search for Poojas..."
       activeCategory="poojas"
       filterTitle="Pooja Filters"
-      categories={["Weekly Poojas", "Special Occasions", "Festival Poojas"]}
-      itemActionLabel="Book Now"
-      itemActionHrefPrefix="/poojas"
+      itemActionLabel="View Details"
+      detailHrefPrefix="/poojas"
+      allowCart={false}
     />
   );
 }

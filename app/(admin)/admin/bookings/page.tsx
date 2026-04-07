@@ -13,14 +13,14 @@ export default async function AdminBookingsPage() {
 
   return (
     <div className="flex flex-col">
-      <section className="mb-12">
-        <h1 className="text-5xl font-extrabold tracking-tight text-on-surface mb-2">Ritual Ledger</h1>
-        <p className="text-on-surface-variant font-medium text-lg max-w-3xl">
+      <section className="mb-8 md:mb-12">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-on-surface md:text-5xl">Ritual Ledger</h1>
+        <p className="max-w-3xl text-base font-medium text-on-surface-variant md:text-lg">
           Booking operations view with devotee details, account identity, prasadam delivery decision, and payment traceability.
         </p>
       </section>
 
-      <div className="mb-6 flex items-center justify-between rounded-3xl border border-outline-variant bg-surface p-5 shadow-sm">
+      <div className="mb-6 flex flex-col gap-3 rounded-3xl border border-outline-variant bg-surface p-4 shadow-sm md:flex-row md:items-center md:justify-between md:p-5">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-on-surface-variant">Bookings</p>
           <h2 className="mt-2 text-2xl font-bold text-on-surface">Recent Booking Records</h2>
@@ -36,7 +36,7 @@ export default async function AdminBookingsPage() {
           <p className="mt-4">No bookings recorded in the ledger yet.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 md:gap-6 xl:grid-cols-2">
           {bookings.map((booking) => (
             <article
               key={booking.id}

@@ -6,6 +6,7 @@ export default function AdminGoodiesManagementPage() {
       title="Goodies Catalog"
       subtitle="Control all Muthappan goodies listed in the store: image, price, descriptions, and stock visibility."
       endpoint="/api/admin/goodies"
+      uploadPreset={process.env.CLOUDINARY_UPLOAD_PRESET || process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       booleanBadgeField="inStock"
       booleanBadgeLabel={["In Stock", "Out of Stock"]}
       fields={[
