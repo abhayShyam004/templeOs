@@ -14,8 +14,8 @@ export default async function MyBookingsPage() {
   return (
     <div className="flex flex-col gap-12 text-on-surface">
       <header>
-        <h1 className="text-5xl font-extrabold tracking-tight font-headline">Ritual Registry</h1>
-        <p className="text-on-surface-variant mt-2 text-lg">A chronological ledger of your scheduled poojas and divine commitments.</p>
+        <h1 className="text-5xl font-extrabold tracking-tight font-headline">Booked Poojas</h1>
+        <p className="text-on-surface-variant mt-2 text-lg">A ledger of your booked poojas.</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

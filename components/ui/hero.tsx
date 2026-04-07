@@ -145,7 +145,7 @@ export default function ShaderShowcase() {
       </aside>
 
       <nav className="fixed top-0 z-50 w-full border-b border-white/10 bg-[#120d0d]/80 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-8">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 md:px-8 md:py-3.5">
           <div className="flex items-center gap-3">
             <button
               aria-label="Open menu"
@@ -207,10 +207,10 @@ export default function ShaderShowcase() {
             <h1 className="mb-5 whitespace-pre-line text-[3rem] font-extrabold leading-[0.9] tracking-tight sm:mb-6 sm:text-5xl md:text-8xl">
               {siteSettings.home_hero_title || "Sri Muthappan Madapura, Indiranagar"}
             </h1>
-            <p className="mb-7 max-w-md text-sm leading-relaxed text-[#b4a8a8] sm:text-base md:mb-8 md:text-xl">
+            <p className={`max-w-md text-sm leading-relaxed text-[#b4a8a8] sm:text-base md:text-xl ${siteSettings.home_notice ? "mb-3 md:mb-7" : "mb-7 md:mb-8"}`}>
               {siteSettings.home_hero_subtitle}
             </p>
-            <p className="mb-7 max-w-md text-xs leading-relaxed text-[#ffd3cf] sm:text-sm md:mb-8">
+            <p className="mb-3 max-w-md text-xs leading-relaxed text-[#ffd3cf] sm:text-sm md:mb-8">
               {siteSettings.home_notice}
             </p>
             <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-row sm:flex-wrap sm:gap-4">
@@ -238,7 +238,7 @@ export default function ShaderShowcase() {
                 src={siteSettings.home_hero_secondary_image || "https://www.almadayans.co.in/images/gallery/img14.jpg"}
               />
             </div>
-            <div className="absolute -bottom-6 left-1 z-40 max-w-[190px] -rotate-6 rounded-xl bg-[#ffd709] p-4 text-black shadow-xl md:-bottom-10 md:-left-10 md:max-w-[220px] md:p-6">
+            <div className="absolute -bottom-2 left-1 z-40 max-w-[190px] -rotate-6 rounded-xl bg-[#ffd709] p-4 text-black shadow-xl md:-bottom-10 md:-left-10 md:max-w-[220px] md:p-6">
               <p className="mb-1 text-3xl leading-none md:text-4xl">✦</p>
               <p className="text-xs font-bold md:text-sm">Weekly Pooja</p>
               <p className="text-xs font-semibold md:text-sm">every friday</p>

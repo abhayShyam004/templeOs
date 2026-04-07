@@ -185,9 +185,15 @@ export default function PublicMarketplace({
                 <span className="text-xs font-bold text-on-surface">Orders</span>
               </Link>
             )}
-            <button className="sm:hidden p-2 hover:bg-surface-container-high rounded-full transition-all">
-              <span className="material-symbols-outlined text-on-surface-variant">search</span>
-            </button>
+            <Link
+              href={session ? "/dashboard" : "/login"}
+              className="sm:hidden p-2 hover:bg-surface-container-high rounded-full transition-all"
+              aria-label={session ? "Dashboard" : "Login"}
+            >
+              <span className="material-symbols-outlined text-on-surface-variant">
+                {session ? "dashboard" : "login"}
+              </span>
+            </Link>
             {session && (
               <Link href="/cart" className="relative p-2 hover:bg-surface-container-high rounded-full transition-all">
                 <span className="material-symbols-outlined text-primary">shopping_cart</span>

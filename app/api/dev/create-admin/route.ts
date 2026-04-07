@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { db as prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
 
+export const dynamic = "force-dynamic";
+
 function notFound() {
   return NextResponse.json({ error: "Not found" }, { status: 404 });
 }

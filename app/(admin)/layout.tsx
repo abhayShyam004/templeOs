@@ -2,6 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 const nav = [
   { label: "Overview", href: "/admin", icon: "dashboard" },
   { label: "Poojas", href: "/admin/pooja-management", icon: "menu_book" },
@@ -25,11 +27,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       {/* SideNavBar Component */}
       <aside className="fixed left-0 top-0 z-50 flex h-screen w-16 flex-col border-r border-outline-variant bg-[#f7f7f7] py-4 md:w-64 md:py-6">
         <div className="mb-6 flex justify-center px-2 md:mb-10 md:justify-start md:px-6">
-          <Link className="flex shrink-0 items-center gap-3 md:gap-6" href="/" aria-label="Go to temple site">
+          <Link className="flex min-w-0 items-center gap-3 md:gap-4" href="/" aria-label="Go to temple site">
             <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-lg font-black text-primary md:hidden">
               ॐ
             </span>
-            <span className="hidden text-xl font-black tracking-tighter text-on-surface font-headline md:inline md:text-2xl">
+            <span className="hidden max-w-[170px] text-lg font-black leading-tight tracking-tight text-on-surface font-headline md:block">
               ശ്രീ muthappa madapura
             </span>
           </Link>

@@ -112,6 +112,14 @@ export default function DashboardLayout({
               <Link href="/dashboard" className={`p-2 ${pathname === '/dashboard' ? 'text-primary' : 'text-on-surface-variant'}`}><LayoutDashboard size={20} /></Link>
               <Link href="/my-bookings" className={`p-2 ${pathname === '/my-bookings' ? 'text-primary' : 'text-on-surface-variant'}`}><CalendarDays size={20} /></Link>
               <Link href="/my-orders" className={`p-2 ${pathname === '/my-orders' ? 'text-primary' : 'text-on-surface-variant'}`}><Package size={20} /></Link>
+              <button
+                type="button"
+                onClick={() => signOut({ callbackUrl: "/" })}
+                className="p-2 text-on-surface-variant"
+                aria-label="Logout"
+              >
+                <LogOut size={20} />
+              </button>
             </div>
           </header>
 

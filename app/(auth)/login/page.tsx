@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { PolicyModal } from "@/components/temple/policy-modal";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activePolicyModal, setActivePolicyModal] = useState<"privacy" | "terms" | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -54,18 +56,18 @@ export default function LoginPage() {
       </div>
 
       {/* Navigation Shell */}
-      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-8 pt-12 pb-6">
-        <Link href="/" className="font-headline text-2xl font-bold tracking-tighter text-primary">
+      <header className="relative z-20 flex flex-col items-start gap-2 px-4 pt-4 pb-2 sm:px-6 sm:pt-5 sm:pb-3 md:fixed md:top-0 md:w-full md:flex-row md:items-center md:justify-between md:px-8 md:pt-12 md:pb-6">
+        <Link href="/" className="font-headline text-lg font-bold leading-tight tracking-tighter text-primary sm:text-xl md:text-2xl">
           ശ്രീ muthappa madapura Indiranagar
         </Link>
-        <Link href="/" className="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-300 flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 text-xs font-medium text-on-surface-variant transition-colors duration-300 hover:text-secondary group sm:text-sm">
           <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
-          <span className="font-label text-sm font-medium">Temple Home</span>
+          <span className="font-label font-medium">Back to temple home</span>
         </Link>
       </header>
 
       {/* Main Content Canvas */}
-      <main className="flex-grow flex items-center justify-center px-6 relative z-10 pt-20 pb-12">
+      <main className="relative z-10 flex flex-grow items-center justify-center px-4 pt-6 pb-12 sm:px-6 md:px-6 md:pt-20">
         <div className="w-full max-w-md">
           {/* Central Login Card */}
           <div className="bg-white/80 backdrop-blur-2xl p-10 rounded-xl border border-outline-variant/30 shadow-xl relative group overflow-hidden">
@@ -168,10 +170,23 @@ export default function LoginPage() {
       <footer className="w-full px-12 py-8 flex flex-col md:flex-row justify-between items-center gap-4 relative z-10 bg-white/40 backdrop-blur-sm">
         <div className="font-label text-[10px] tracking-widest text-outline uppercase">© 2026 ശ്രീ muthappa madapura Indiranagar. All Rights Reserved.</div>
         <div className="flex gap-6 font-label">
-          <Link className="text-[10px] uppercase tracking-widest font-bold text-outline hover:text-primary transition-colors" href="#">Privacy Policy</Link>
-          <Link className="text-[10px] uppercase tracking-widest font-bold text-outline hover:text-primary transition-colors" href="#">Terms of Service</Link>
+          <button
+            className="text-[10px] uppercase tracking-widest font-bold text-outline transition-colors hover:text-primary"
+            onClick={() => setActivePolicyModal("privacy")}
+            type="button"
+          >
+            Privacy Policy
+          </button>
+          <button
+            className="text-[10px] uppercase tracking-widest font-bold text-outline transition-colors hover:text-primary"
+            onClick={() => setActivePolicyModal("terms")}
+            type="button"
+          >
+            Terms of Service
+          </button>
         </div>
       </footer>
+      <PolicyModal activePolicy={activePolicyModal} onClose={() => setActivePolicyModal(null)} />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import { PolicyModal } from "@/components/temple/policy-modal";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [activePolicyModal, setActivePolicyModal] = useState<"privacy" | "terms" | null>(null);
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -65,18 +67,18 @@ export default function RegisterPage() {
   return (
     <div className="bg-background text-on-background font-body min-h-screen flex flex-col relative overflow-x-hidden">
       {/* Navigation Shell - Matching Login Page */}
-      <header className="fixed top-0 w-full z-50 flex justify-between items-center px-8 pt-12 pb-6">
-        <Link href="/" className="font-headline text-2xl font-bold tracking-tighter text-primary">
+      <header className="relative z-20 flex flex-col items-start gap-2 px-4 pt-4 pb-2 sm:px-6 sm:pt-5 sm:pb-3 md:fixed md:top-0 md:w-full md:flex-row md:items-center md:justify-between md:px-8 md:pt-12 md:pb-6">
+        <Link href="/" className="font-headline text-lg font-bold leading-tight tracking-tighter text-primary sm:text-xl md:text-2xl">
           ശ്രീ Muthappa Madapura Indiranagar
         </Link>
-        <Link href="/" className="text-on-surface-variant font-medium hover:text-secondary transition-colors duration-300 flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2 text-xs font-medium text-on-surface-variant transition-colors duration-300 hover:text-secondary group sm:text-sm">
           <span className="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
-          <span className="font-label text-sm font-medium">Temple Home</span>
+          <span className="font-label font-medium">Back to temple home</span>
         </Link>
       </header>
 
       <main 
-        className="flex-grow flex items-center justify-center p-6 bg-temple-silhouette pt-32" 
+        className="flex-grow flex items-center justify-center bg-temple-silhouette px-4 pt-6 pb-12 sm:px-6 md:p-6 md:pt-32" 
         style={{
           backgroundImage: `linear-gradient(rgba(255, 251, 255, 0.9), rgba(255, 251, 255, 0.95)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuApFncSIGQmvIlBBpZWPKMGUd1ZpKL1kSelk2NhSy9ME83LPiDNcakbMX-zVLsHNvEZ5k-NLYrUw_CLxCtF90tOQYHkX-ajgwmV3JZ_fZCAtNHaTZLNJlz2oGrJ9PvEio--RhL4yD74Uurv4-FbdBXOGWhNmNy23k7eYS6pM6WGixfTSVv4Xhg8lns7Z5_tZ3HEVd4c3xH22eOcPc_IupmcxzhbUBWn8N1yW9woolEqCLIL17axgPHTclT3YriVTS0nEon8NkUkRyo)`,
           backgroundSize: 'cover',
@@ -233,14 +235,21 @@ export default function RegisterPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-surface-container-low w-full px-12 py-8 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-outline-variant/20">
-        <span className="text-xl font-bold text-primary font-headline">The Sacred Sanctuary</span>
-        <div className="text-on-surface-variant font-label text-xs">© 2026 The Sacred Sanctuary. All rights reserved.</div>
-        <div className="flex gap-6 text-on-surface-variant font-label text-xs">
-          <Link className="hover:text-primary transition-colors" href="#">Privacy Policy</Link>
-          <Link className="hover:text-primary transition-colors" href="#">Terms of Service</Link>
+      <footer className="w-full border-t border-outline-variant/20 bg-surface-container-low px-6 py-8 md:px-12">
+        <div className="flex flex-col items-center gap-4 text-center md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:text-left">
+          <span className="text-xl font-bold text-primary font-headline md:justify-self-start"></span>
+          <div className="text-xs text-on-surface-variant font-label md:text-center">© ശ്രീ Muthappa Madapura Indiranagar. All rights reserved.</div>
+          <div className="flex gap-6 text-xs text-on-surface-variant font-label md:justify-self-end">
+            <button className="hover:text-primary transition-colors" onClick={() => setActivePolicyModal("privacy")} type="button">
+              Privacy Policy
+            </button>
+            <button className="hover:text-primary transition-colors" onClick={() => setActivePolicyModal("terms")} type="button">
+              Terms of Service
+            </button>
+          </div>
         </div>
       </footer>
+      <PolicyModal activePolicy={activePolicyModal} onClose={() => setActivePolicyModal(null)} />
     </div>
   );
 }

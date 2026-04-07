@@ -23,7 +23,7 @@ export default async function MyOrdersPage() {
     <div className="flex flex-col gap-12 text-on-surface">
       <header>
         <h1 className="text-5xl font-extrabold tracking-tight font-headline">Order History</h1>
-        <p className="text-on-surface-variant mt-2 text-lg">Track your sacred offerings and devotional collection.</p>
+        <p className="text-on-surface-variant mt-2 text-lg">Track your Orders.</p>
       </header>
 
       <div className="space-y-16">
